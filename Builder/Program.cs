@@ -14,21 +14,93 @@ namespace Builder
             //    .AddChild("li", "...");
             //Console.WriteLine(builder.ToString());
 
-            var pb = new PersonBuilder();
-            Person person = pb
-                .Lives
-                    .At("145 London Road")
-                    .In("London")
-                    .WithPostcode("SW12BC")
-                .Works
-                    .At("Google")
-                    .AsA("Engineer")
-                    .Earning(1229990);
+            //var pb = new PersonBuilder();
+            //Person person = pb
+            //    .Lives
+            //        .At("145 London Road")
+            //        .In("London")
+            //        .WithPostcode("SW12BC")
+            //    .Works
+            //        .At("Google")
+            //        .AsA("Engineer")
+            //        .Earning(1229990);
+//
+            //Console.WriteLine(person);
 
-            Console.WriteLine(person);
+            var cb = new CodeBuilder("Person")
+                .AddField("Name", "string")
+                .AddField("Age", "int");
+
+            Console.WriteLine(cb);
         }
     }
 
+    public class Field
+    {
+        public string Name, Type;
+
+        public Field(string name, string type)
+        {
+            Name = name;
+            Type = type;
+        }
+
+        public override string ToString()
+        {
+            return $"public {Type} {Name}";
+        }
+    }
+    
+    public class Code
+    {
+        public string ClassName;
+
+        public List<Field> Fields = new List<Field>();
+        
+        private const int IndentSize = 4;
+
+        public Code(string className)
+        {
+            ClassName = className;
+        }
+
+        public override string ToString()
+        {
+            return ToStringImpl(IndentSize);
+        }
+
+        private string ToStringImpl(int indent)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine($"public class {ClassName}")
+                .AppendLine("{");
+            foreach (var field in Fields)
+                sb.AppendLine(new string(' ', indent) + field);
+
+            sb.AppendLine("}");
+            return sb.ToString();
+        }
+    }
+
+    public class CodeBuilder
+    {
+        private Code _root;
+
+        public CodeBuilder(string className)
+        {
+            _root = new Code(className);
+        }
+
+        public CodeBuilder AddField(string fieldName, string type)
+        {
+            var field = new Field(fieldName, type);
+            _root.Fields.Add(field);
+            return this;
+        }
+
+        public override string ToString() => _root.ToString();
+    }
+    
     public class Person
     {
         public string StreetAddress, Postcode, City;
