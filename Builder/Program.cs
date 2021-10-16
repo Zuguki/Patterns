@@ -9,8 +9,9 @@ namespace Builder
         static void Main(string[] args)
         {
             var builder = new HtmlBuilder("ul");
-            builder.AddChild("li", "Hello!");
-            builder.AddChild("li", "How r u?");
+            builder.AddChild("li", "Hello!")
+                .AddChild("li", "How r u?")
+                .AddChild("li", "...");
             Console.WriteLine(builder.ToString());
         }
     }
@@ -70,10 +71,11 @@ namespace Builder
             Root.Name = rootName;
         }
 
-        public void AddChild(string childName, string childText)
+        public HtmlBuilder AddChild(string childName, string childText)
         {
             var element = new HtmlElement(childName, childText);
             Root.Elements.Add(element);
+            return this;
         }
 
         public override string ToString() => Root.ToString();
