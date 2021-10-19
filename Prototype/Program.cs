@@ -88,10 +88,10 @@ namespace Prototype
         {
             using (var stream = new MemoryStream())
             {
-                BinaryFormatter formatter = new BinaryFormatter();
+                var formatter = new BinaryFormatter();
                 formatter.Serialize(stream, self);
                 stream.Seek(0, SeekOrigin.Begin);
-                object copy = formatter.Deserialize(stream);
+                var copy = formatter.Deserialize(stream);
                 return (T) copy;
             }
         }
