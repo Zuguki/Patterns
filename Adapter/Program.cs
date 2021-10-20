@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using MoreLinq.Extensions;
@@ -43,6 +44,27 @@ namespace Adapter
             X = x;
             Y = y;
         }
+        
+        protected bool Equals(Point other)
+        {
+            return X == other.X && Y == other.Y;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Point) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (X * 397) ^ Y;
+            }
+        }
 
         public override string ToString()
         {
@@ -58,6 +80,28 @@ namespace Adapter
         {
             Start = start;
             End = end;
+        }
+        
+        protected bool Equals(Line other)
+        {
+            return Equals(Start, other.Start) && Equals(End, other.End);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Line) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return ((Start != null ? Start.GetHashCode() : 0) * 397) 
+                       ^ (End != null ? End.GetHashCode() : 0);
+            }
         }
     }
 
@@ -75,12 +119,20 @@ namespace Adapter
         }
     }
 
-    public class LineToPointAdapter : Collection<Point>
+    public class LineToPointAdapter : IEnumerable<Point>
     {
         private static int _count;
+        private static Dictionary<int, List<Point>> _cache = new Dictionary<int, List<Point>>();
+        private int _hash;
         
         public LineToPointAdapter(Line line)
         {
+            _hash = line.GetHashCode();
+            if (_cache.ContainsKey(_hash))
+                return;
+
+            var points = new List<Point>();
+            
             Console.WriteLine($"{++_count}: Generating points for line");
             
             var left = Math.Min(line.Start.X, line.End.X);
@@ -91,13 +143,26 @@ namespace Adapter
             if (right - left == 0)
             {
                 for (var y = top; y <= bottom; ++y)
-                    Add(new Point(left, y));
+                    
+                    points.Add(new Point(left, y));
             }
             else if (line.End.Y - line.Start.Y == 0)
             {
                 for (var x = left; x <= right; ++x)
-                    Add(new Point(x, top));
+                    points.Add(new Point(x, top));
             }
+            
+            _cache.Add(_hash, points);
+        }
+
+        public IEnumerator<Point> GetEnumerator()
+        {
+            return _cache[_hash].GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }
