@@ -45,16 +45,8 @@ public class ProductFilter : IFilter<Product>
     public IEnumerable<Product> Filter(IEnumerable<Product> items, ISpecification<Product> specification) => 
         items.Where(specification.MakeSpecification);
 
-    public IEnumerable<Product> Filter(IEnumerable<Product> items, params ISpecification<Product>[] specifications)
-    {
-        foreach (var item in items)
-        {
-            if (specifications.Any(spec => spec.MakeSpecification(item) == false))
-                continue;
-            
-            yield return item;
-        }
-    }
+    public IEnumerable<Product> Filter(IEnumerable<Product> items, params ISpecification<Product>[] specifications) =>
+        items.Where(prod => specifications.All(spec => spec.MakeSpecification(prod)));
 }
 
 public class ColorSpecification : ISpecification<Product>
