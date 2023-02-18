@@ -1,14 +1,25 @@
 ﻿using System;
 using Patterns.Builder;
 
-var pb = new PersonBuilder()
-    .Lives()
-        .InStreet("Luchi")
-        .InHouse("32")
-        .WithPostCode("33223322")
-    .Work()
-        .At("Engineer")
-        .HasSalary(999999)
-    .Build();
+var codeBuilder = new CodeBuilder()
+    .AddClass()
+        .SetName("User")
+        .SetAccessModifier(AccessModifier.Public)
+    .AddField()
+        .AddName("Name")
+        .AddAccessModifier(AccessModifier.Private)
+        .AddType("string")
+    .AddField()
+        .AddName("Age")
+        .AddAccessModifier(AccessModifier.Private)
+        .AddType("int")
+    .AddClass()
+        .SetName("Player")
+        .SetAccessModifier(AccessModifier.Private)
+    .AddField()
+        .AddName("Rating")
+        .AddAccessModifier(AccessModifier.Internal)
+        .AddType("int");
 
-Console.WriteLine(pb.ToString());
+
+Console.WriteLine(codeBuilder);
