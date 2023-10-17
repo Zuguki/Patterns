@@ -1,5 +1,5 @@
 ﻿using System;
-using Patterns.Builder;
+using Builder.Builder;
 
 var codeBuilder = new CodeBuilder()
     .AddClass()

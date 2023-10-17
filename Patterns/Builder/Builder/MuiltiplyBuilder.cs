@@ -1,4 +1,4 @@
-namespace Patterns.Builder;
+namespace Builder.Builder;
 
 public class Person
 {
